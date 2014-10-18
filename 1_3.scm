@@ -76,13 +76,67 @@
 
 ; P 1.37
 
-
 (define (cont-frac n d k)
-		(if (= k 0) 
+	(define (recur num)
+		(if (> num k) 
 			0 
 			(let 
-				((numerator (n k)) 
-				(denominator (d k)))
-			(/ numerator (+ denominator (cont-frac n d (- k 1)))))))
+				((numerator (n num)) 
+				(denominator (d num)))
+			(/ numerator (+ denominator (recur (+ num 1)))))))
+	(recur 1))
 
- 
+(define (cont-frac-r n d k)
+		(define (iter ans num) 
+			(if (= num 0) 
+				ans
+				   (let
+					 ((numerator (n num))
+        	                         (denominator (d num)))
+					(iter (/ numerator (+ ans denominator)) (- num 1)))))
+		(iter (/ (n k) (d k))  (- k 1))) 
+
+(cont-frac (lambda (i) 1.0) (lambda (i) 1.0) 100)
+(cont-frac-r (lambda (i) 1.0) (lambda (i) 1.0) 100)
+
+(define phi-inv (/ 1 (/ (+ 1 (sqrt 5)) 2)))
+
+(define (k-phi? func n d ans apprx) 
+		(define (iter k) 
+			(display (func n d k))
+			(newline)
+			(if (< (abs (- (func n d k) ans)) apprx) k (iter (+ k 1))))
+		(iter 1))
+
+(k-phi? cont-frac (lambda (i) 1.0) (lambda (i) 1.0) phi-inv 0.0001)
+(k-phi? cont-frac-r (lambda (i) 1.0) (lambda (i) 1.0) phi-inv 0.0001)
+
+
+; P 1.38
+(define e (+ 2 (cont-frac (lambda (i) 1.0) 
+		     (lambda (i) 
+				(if (or (= (remainder i 3) 0) (= (remainder i 3) 1 )) 
+					1 
+					(+ 2 (* (floor (/ i 3)) 2))))
+			10)))
+
+(define (e-general func k)
+		(+ 2 (func (lambda (i) 1.0)
+                     (lambda (i) 
+                                (if (or (= (remainder i 3) 0) (= (remainder i 3) 1 ))
+                                        1 
+                                        (+ 2 (* (floor (/ i 3)) 2))))
+                        k)))
+
+(define (e-gen func approx)
+		(define (n i) 1.0)
+		(define (d i) (if (or (= (remainder i 3) 0) (= (remainder i 3) 1 ))
+                                       1
+                                      (+ 2 (* (floor (/ i 3)) 2))))
+		(+ 2 (func n d (k-phi? func n d 0.718281828459045 approx))))
+
+(e-general cont-frac-r 100)
+(e-general cont-frac 100)
+(e-gen cont-frac 0.00001)
+(e-gen-r cont-frac 0.00001)
+
