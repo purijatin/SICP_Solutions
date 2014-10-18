@@ -161,3 +161,6 @@
 ; P 1.42
 (define (compose f g) (lambda (x) (f (g x))))
 
+; P 1.43
+(define (repeated f x) (if (= 1 x) f (repeated (compose f f) (- x 1))))
+
