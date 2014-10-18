@@ -164,3 +164,7 @@
 ; P 1.43
 (define (repeated f x) (if (= 1 x) f (repeated (compose f f) (- x 1))))
 
+; P 1.44
+(define dx 1)
+(define (smooth f) (lambda (x) (/ (+ (f (- x dx)) (f x) (f (+ x dx))) 3)))
+(define (n-fold-smooth f num) ((repeated smooth num) f))
