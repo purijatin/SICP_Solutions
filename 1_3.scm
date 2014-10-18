@@ -128,6 +128,7 @@
                                         (+ 2 (* (floor (/ i 3)) 2))))
                         k)))
 
+;; Automatically finds k based on error allowed
 (define (e-gen func approx)
 		(define (n i) 1.0)
 		(define (d i) (if (or (= (remainder i 3) 0) (= (remainder i 3) 1 ))
@@ -139,4 +140,24 @@
 (e-general cont-frac 100)
 (e-gen cont-frac 0.00001)
 (e-gen-r cont-frac 0.00001)
+
+;P 1.40
+(define (cubic a b c) (lambda (x) (+ (* x x x) (* a x x) (* b x) c)))
+
+; P 1.41 depends applicative or normal
+(define (double f) (lambda (x) (f (f x))))
+
+; Applicative
+((double (double double)) f)
+=> ((d d (d d)) f)
+=> ((d d (d (d f))))
+=> ((d d (d   (f  (f)))))
+=> ((d d      (f(f  (f(f))))))
+=> ((d        (f(f(f(f  (f(f(f(f))))))))))
+=> (f(f(f(f(f(f(f(f(   f(f(f(f(f(f(f(f))))))))))))))))
+
+;Normal
+
+; P 1.42
+(define (compose f g) (lambda (x) (f (g x))))
 
